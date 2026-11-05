@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 import pe.edu.pe.PharmaBackend.dto.DetalleVentaRequestDTO;
 import pe.edu.pe.PharmaBackend.dto.DetalleVentaResponseDTO;
 import pe.edu.pe.PharmaBackend.dto.VentaRequestDTO;
@@ -49,6 +50,7 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "productos", allEntries = true)
     public VentaResponseDTO registrar(VentaRequestDTO request) {
 
         log.info("Inicio de registro de venta. clienteId={}, cantidadDetalles={}",
