@@ -8,9 +8,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
-
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -28,3 +26,8 @@ app:
     # Solo desarrollo local. En producción se configura por variable de entorno.
     secret: ${JWT_SECRET}
     expiracion-minutos: 60
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %-5level [%X{requestId}] %logger{36} - %msg%n"
