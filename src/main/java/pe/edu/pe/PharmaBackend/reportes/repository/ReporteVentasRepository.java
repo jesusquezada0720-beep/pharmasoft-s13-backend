@@ -3,6 +3,7 @@ package pe.edu.pe.PharmaBackend.reportes.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Pageable;
 import pe.edu.pe.PharmaBackend.entity.Venta;
 
 import java.math.BigDecimal;
@@ -17,6 +18,30 @@ public interface ReporteVentasRepository extends JpaRepository<Venta, Long> {
         Long getCantidadVendida();
         BigDecimal getMontoTotal();
     }
+
+    interface ProductoMasVendidoProjection {
+        Long getProductoId();
+        String getProductoNombre();
+        String getCategoriaNombre();
+        Long getCantidadVendida();
+        BigDecimal getMontoTotal();
+    }
+
+    @Query("""
+            select p.id as productoId,
+                   p.nombre as productoNombre,
+                   c.nombre as categoriaNombre,
+                   sum(d.cantidad) as cantidadVendida,
+                   sum(d.subtotal) as montoTotal
+            from DetalleVenta d
+            join d.venta v
+            join d.producto p
+            left join p.categoria c
+            where v.estado = pe.edu.pe.PharmaBackend.enums.EstadoVenta.REGISTRADA
+            group by p.id, p.nombre, c.nombre
+            order by sum(d.cantidad) desc, sum(d.subtotal) desc, p.nombre asc
+            """)
+    List<ProductoMasVendidoProjection> productosMasVendidos(Pageable pageable);
 
     @Query("""
             select c.id as categoriaId,
